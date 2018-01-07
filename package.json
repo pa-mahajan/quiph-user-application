@@ -1,0 +1,33 @@
+{
+  "name": "quiph-backend-user-app",
+  "version": "1.0.0",
+  "description": "quiph user management application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "npm install",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pa-mahajan/quiph-user-application.git"
+  },
+  "keywords": [
+    "quiph",
+    "user",
+    "management",
+    "node.js"
+  ],
+  "author": "Parth Mahajan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pa-mahajan/quiph-user-application/issues"
+  },
+  "homepage": "https://github.com/pa-mahajan/quiph-user-application#readme",
+  "dependencies": {
+    "bunyan": "^1.8.12",
+    "koa": "^2.4.1",
+    "koa-router": "^7.3.0",
+    "lodash": "^4.17.4"
+  }
+}
