@@ -37,6 +37,12 @@ let create = async (params) => {
                 roleId
             ];
             await client.query(addUserRolesQuery, addUserRoleValues);
+            let loginInfoQuery = 'Insert Into User_login (username, password ) VALUES ($1, $2)';
+            let loginInfoValues = [
+                params.data.email,
+                params.data.password
+            ];
+            await client.query(loginInfoQuery, loginInfoValues);
             await client.query('COMMIT')
         } catch(e){
             await client.query('ROLLBACK');
@@ -127,10 +133,23 @@ let update = async (params) => {
     }
 }
 
+let getUserWithEmail = async (params) => {
+    try{
+        let query = 'Select username, password from user_login where username = $1';
+        let values = [
+            params.email
+        ];
+        let userResult = await pool.query(query, values);
+        return userResult.rows[0];
+    } catch(e){
+        throw(e);
+    }
+}
 
 module.exports = {
     create: create,
     get: get,
     remove: remove,
     update: update,
+    getUserWithEmail: getUserWithEmail
 };

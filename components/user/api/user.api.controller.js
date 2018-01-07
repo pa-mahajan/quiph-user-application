@@ -3,13 +3,15 @@
  */
 'use strict'
 
-const userController = require('./../controller');
+const userController = require('./../controller'),
+    authService = require('./../../../auth');
 
 let create = async (ctx, next) => {
     try{
         let reqBody = ctx.request.fields;
         if(!reqBody)
             ctx.throw('Invalid Request', 400);
+        reqBody.password = 123456;
         let userControllerParams = {
             data: reqBody
         };
@@ -73,10 +75,31 @@ let update = async (ctx, next) => {
     }
 }
 
+let authenticate = async (ctx, next) => {
+    try{
+        let reqBody = ctx.request.fields;
+        if(!reqBody)
+            ctx.throw('Invalid Request', 400);
+        let userControllerParams = {
+            data: reqBody
+        }
+        let user = await userController.authenticate(userControllerParams);
+        if(!user)
+            ctx.throw('Invalid Username/Password', 401);
+        let userPayload = {
+            username: user.email
+        };
+        ctx.status = 200;
+        ctx.set('Authorization', authService.signToken(userPayload));
+    } catch(e) {
+        throw(e);
+    }
+}
 
 module.exports = {
     create: create,
     get: get,
     remove: remove,
-    update: update
+    update: update,
+    authenticate: authenticate
 }

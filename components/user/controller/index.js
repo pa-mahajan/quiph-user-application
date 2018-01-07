@@ -63,9 +63,32 @@ let update = async (params) => {
     }
 }
 
+let authenticate = async (params) => {
+    try{
+        let userData = params.data;
+        if(!userData.email || !userData.password)
+            throw('Kindly Provide email and password');
+
+        let salt = await bcrypt.genSalt();
+        let hash = await bcrypt.hash(userData.password, salt);
+        let userServiceParams = {
+            email: userData.email
+        };
+        let userResult = await userServices.getUserWithEmail(userServiceParams);
+        if(userResult.username){
+            if(await bcrypt.compare(userData.password.toString(), userResult.password)){
+                return userResult.username;
+            }
+        }
+        return false;
+    } catch(e){
+        throw(e);
+    }
+}
 module.exports = {
     create: create,
     get: get,
     remove: remove,
-    update: update
+    update: update,
+    authenticate: authenticate
 };

@@ -30,6 +30,10 @@ exports.init = (params) => {
          */
         params.router.del('/:id', userAPIController.remove);
 
+        /**
+         * Authenticate User
+         */
+        params.router.post('/auth', convert(parse()), userAPIController.authenticate);
     } catch(err){
         throw(err);
     }
