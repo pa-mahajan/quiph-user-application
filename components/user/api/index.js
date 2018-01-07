@@ -5,6 +5,7 @@
 
 const userAPIController = require('./user.api.controller'),
     parse = require('koa-better-body'), 
+    authServices = require('./../../../auth'),
     convert = require('koa-convert');
 
 exports.init = (params) => {
@@ -34,6 +35,11 @@ exports.init = (params) => {
          * Authenticate User
          */
         params.router.post('/auth', convert(parse()), userAPIController.authenticate);
+
+        /**
+         * Get Logged In user Details
+         */
+        params.router.get('/me', authServices.isAuthenticated(), userAPIController.me);
     } catch(err){
         throw(err);
     }

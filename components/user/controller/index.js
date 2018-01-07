@@ -74,7 +74,7 @@ let authenticate = async (params) => {
         let userServiceParams = {
             email: userData.email
         };
-        let userResult = await userServices.getUserWithEmail(userServiceParams);
+        let userResult = await userServices.getUserPasswordThroughEmail(userServiceParams);
         if(userResult.username){
             if(await bcrypt.compare(userData.password.toString(), userResult.password)){
                 return userResult.username;
@@ -85,10 +85,27 @@ let authenticate = async (params) => {
         throw(e);
     }
 }
+
+let getUserWithEmail = async (params) => {
+    try{
+        let email = params.email;
+        if(!email)
+            throw('Email Not Found');
+        let userServiceParams = {
+            email: email
+        }
+        let userInfo = await userServices.getUserWithEmail(userServiceParams);
+        return userInfo;
+    } catch(e) {
+        throw(e);
+    }
+}
+
 module.exports = {
     create: create,
     get: get,
     remove: remove,
     update: update,
-    authenticate: authenticate
+    authenticate: authenticate,
+    getUserWithEmail: getUserWithEmail
 };

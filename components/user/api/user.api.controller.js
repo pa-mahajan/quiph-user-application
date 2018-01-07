@@ -87,10 +87,29 @@ let authenticate = async (ctx, next) => {
         if(!user)
             ctx.throw('Invalid Username/Password', 401);
         let userPayload = {
-            username: user.email
+            u: user
         };
+        console.log(userPayload);
         ctx.status = 200;
         ctx.set('Authorization', authService.signToken(userPayload));
+    } catch(e) {
+        throw(e);
+    }
+}
+
+let me = async (ctx, next) => {
+    try{
+        let username = ctx.state.user.u;
+        if(!username)
+            throw('Unauthorized Request', 401);
+        let userControllerParams = {
+            email: username
+        };
+        let me = await userController.getUserWithEmail(userControllerParams);
+        ctx.status = 200;
+        ctx.body = {
+            me: me
+        }
     } catch(e) {
         throw(e);
     }
@@ -101,5 +120,6 @@ module.exports = {
     get: get,
     remove: remove,
     update: update,
-    authenticate: authenticate
+    authenticate: authenticate,
+    me: me
 }

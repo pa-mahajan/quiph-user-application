@@ -133,7 +133,7 @@ let update = async (params) => {
     }
 }
 
-let getUserWithEmail = async (params) => {
+let getUserPasswordThroughEmail = async (params) => {
     try{
         let query = 'Select username, password from user_login where username = $1';
         let values = [
@@ -146,10 +146,25 @@ let getUserWithEmail = async (params) => {
     }
 }
 
+let getUserWithEmail = async (params) => {
+    try{
+        let query = 'Select u.id, fname as firstname, lname as lastname, values as role  from user_info as u INNER JOIN user_roles as ur ON u.id=ur.userid INNER JOIN roles as r ON ur.roleid=r.id where u.email = $1';
+        let values = [
+            params.email
+        ];
+
+        let userInfo = await pool.query(query, values);
+        return userInfo.rows[0];
+    } catch(e) {
+        throw(e);
+    } 
+}
+
 module.exports = {
     create: create,
     get: get,
     remove: remove,
     update: update,
+    getUserPasswordThroughEmail: getUserPasswordThroughEmail,
     getUserWithEmail: getUserWithEmail
 };
