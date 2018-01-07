@@ -1,5 +1,5 @@
 /**
- * Development Environment Configurations
+ * Test Environment Configurations
  */
 'use strict'
 
@@ -18,8 +18,5 @@ module.exports = {
             port: 5433,
             connect: true
         }
-    },
-    secrets: {
-        session: 'hello World'
     }
 }

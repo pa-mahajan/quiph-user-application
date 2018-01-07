@@ -44,14 +44,12 @@ require('./config/connections')();
 const koa = require('koa'),
     app = new koa(),
     co = require('co'),
-    router = require('koa-router'),
-    fs = require('fs'),
-    path = require('path');
+    router = require('koa-router');
 
 /**
  * Application Middleware
  */
-require('./middlewares');
+require('./middlewares')(app);
 
 /**
  * Initialize Application Function
