@@ -4,12 +4,13 @@
  */
 'use strict'
 
-console.log('test')
 const user = require('./../'),
     userService = require('./../service'),
+    userController = require('./../controller'),
     expect = require('chai').expect,
     should = require('chai').should(),
-    pool = require('./../../../_shared/psql');
+    pool = require('./../../../_shared/psql'),
+    sinon = require('sinon');
 
 describe('User', async () => {
     describe('User Serivce', async () => {
@@ -357,4 +358,106 @@ describe('User', async () => {
             });
         })
     });
+    describe('User Controller', async () => {
+        describe('create user', async () => {
+            it('should validate existance of every field and throw exception otherwise', async () => {
+                let params = {
+                    data: {
+                        email: "normalEmail11gmail.com",
+                        firstname: "parth",
+                    }
+                };
+                try{
+                    let user = await userController.create(params);
+                    throw(new Error('No Error Thrown'));
+                } catch(e){
+                    e.should.be.an.instanceof(Error);
+                    e.message.should.be.equal('Invalid Data. Kindly send required fields');
+                }
+            });
+            it('should return all fileds of added user', async () => {
+                let params = {
+                    data: {
+                        email: "normalEmail12gmail.com",
+                        firstname: "parth",
+                        lastname: "mahajan",
+                        role: "admin"
+                    }
+                };
+
+                let returnObj = {
+                    email: "normalEmail12gmail.com",
+                    firstname: "parth",
+                    lastname: "mahajan",
+                    role: "admin",
+                    id: 10
+                };
+
+                let createUserService = sinon.stub(userService, 'create').returns(returnObj);
+                
+                let user = await userController.create(params);
+                user.should.be.deep.equal(returnObj);
+                createUserService.calledOnce.should.be.true;
+            });
+        });
+
+        describe('Get User', async () => {
+            it('returns list of user', async () => {
+                let returnObj = [{
+                    email: "normalEmail12gmail.com",
+                    firstname: "parth",
+                    lastname: "mahajan",
+                    role: "admin",
+                    id: 10
+                }, {
+                    email: "normalEmail11gmail.com",
+                    firstname: "parth",
+                    lastname: "mahajan",
+                    role: "admin",
+                    id: 11
+                }];
+
+                let getUserService = sinon.stub(userService, 'get').returns(returnObj);
+                let users = await userController.get();
+                users.should.be.deep.equal(returnObj);
+                getUserService.calledOnce.should.be.true;
+            })
+        });
+
+        describe('Remove User', async () => {
+            it('returns true if user is removed', async () => {
+                let removeUserService = sinon.stub(userService, 'remove').returns(true);
+                let params = {
+                    id: 1
+                }
+                let isRemoved = await userController.remove(params);
+                isRemoved.should.be.true;
+                removeUserService.calledOnce.should.be.true;
+            });
+        });
+
+        describe('Update User', async () => {
+            it('returns updated user data', async () => {
+                let params = {
+                    data: {
+                        email: "normalEmail11gmail.com",
+                        firstname: "parth",
+                        lastname: "mahajan",
+                        role: "admin"
+                    }, userId: 1
+                };
+                let returnObj = {
+                    email: "normalEmail11gmail.com",
+                    firstname: "parth",
+                    lastname: "mahajan",
+                    role: "admin",
+                    id: 1
+                }
+                let updateUserService = sinon.stub(userService, 'update').returns(returnObj);
+                let updatedUser = await userController.update(params);
+                updatedUser.should.be.deep.equal(returnObj);
+                updateUserService.calledOnce.should.be.true;
+            });
+        });
+    })
 })

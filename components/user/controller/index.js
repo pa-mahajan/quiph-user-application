@@ -10,10 +10,7 @@ let create = async (params) => {
     try{
         let userData = params.data;
         if(!userData.firstname || !userData.lastname || !userData.email || !userData.role)
-            throw('Invalid Data. Kindly send required fields');
-        let salt = await bcrypt.genSalt();
-        let hash = await bcrypt.hash(userData.password, salt);
-        userData.password = hash;
+            throw(new Error('Invalid Data. Kindly send required fields'));
         let userServiceParams = {
             data: userData
         }
@@ -35,11 +32,8 @@ let get = async (params) => {
 
 let remove = async (params) => {
     try{
-        let id = params.id
-        if(!id)
-            throw('No Id Found');
         let userServiceParams = {
-            id: id
+            id: params.id
         };
         return  await userServices.remove(userServiceParams);
     } catch(e){
