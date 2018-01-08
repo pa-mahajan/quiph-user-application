@@ -45,7 +45,8 @@ let remove = async (ctx, next) => {
         let userControllerParams = {
             id: userId
         };
-        await userController.remove(userControllerParams);
+        if(!(await userController.remove(userControllerParams)))
+            ctx.throw('Unable to Delete User', 500);
         ctx.status = 200;
         ctx.body = {};
     } catch(e){

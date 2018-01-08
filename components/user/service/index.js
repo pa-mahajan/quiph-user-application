@@ -15,7 +15,9 @@ let create = async (params) => {
             await client.query('BEGIN');
             let getRoleIdQuery = 'Select * from roles where values = $1';
             let roleValues = [params.data.role];
-            let roleRows = await client.query(getRoleIdQuery, roleValues); 
+            let roleRows = await client.query(getRoleIdQuery, roleValues);
+            if(!roleRows.rows[0])
+                throw(new Error('Invalid Role Value')); 
             let roleId = roleRows.rows[0].id;
             newUser.role = roleRows.rows[0].values;
             let addUserInfoQuery = 'INSERT INTO user_info (fname, lname, email) VALUES ($1, $2, $3) Returning *';
@@ -53,7 +55,7 @@ let create = async (params) => {
 
 let get = async (params) => {
     try{
-        let query = 'Select u.id, fname as firstname, lname as lastname, values as role  from user_info as u INNER JOIN user_roles as ur ON u.id=ur.userid INNER JOIN roles as r ON ur.roleid=r.id';
+        let query = 'Select u.id, fname as firstname, lname as lastname, values as role, email as email  from user_info as u INNER JOIN user_roles as ur ON u.id=ur.userid INNER JOIN roles as r ON ur.roleid=r.id';
         let allUsersResult = await pool.query(query);
         return allUsersResult.rows;
     } catch(err){
@@ -63,11 +65,16 @@ let get = async (params) => {
 
 let remove = async (params) => {
     try{
+        if(!params.id)
+            throw(new Error('No Id Found To Delete'));
         let query = 'Delete From user_info where id = $1';
         let values = [
             params.id
         ];
-        return await pool.query(query, values);
+        let result = await pool.query(query, values);
+        if(result.rowCount != 0)
+            return true;
+        return false;
     } catch(e){
         throw(e);
     }
@@ -75,6 +82,8 @@ let remove = async (params) => {
 
 let update = async (params) => {
     try{
+        if(!params.userId || !params.data)
+            throw(new Error('Internal Server Error'));
         let client = await pool.client();
         let newUser = {};
         try{
@@ -104,6 +113,8 @@ let update = async (params) => {
                 let getRoleIdQuery = 'Select * from roles where values = $1';
                 let roleValues = [params.data.role];
                 let roleRows = await client.query(getRoleIdQuery, roleValues); 
+                if(roleRows.rows.length == 0)
+                    throw(new Error('Invalid Role Value'));
                 let roleId = roleRows.rows[0].id;
                 newUser.role = roleRows.rows[0].values;
                 let updateRoleQuery = 'Update user_roles Set roleId = $1 where userid=$2';
@@ -127,10 +138,9 @@ let update = async (params) => {
     }
 }
 
-
 module.exports = {
     create: create,
     get: get,
     remove: remove,
-    update: update,
+    update: update
 };

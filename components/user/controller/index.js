@@ -51,8 +51,6 @@ let update = async (params) => {
     try{
         let userData = params.data;
         let userId = params.userId;
-        if(!userId || !userId)
-            throw('Invalid Request. No Id Found');
         let userServiceParams = {
             data: userData,
             userId: userId

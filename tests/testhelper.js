@@ -10,3 +10,7 @@ const mocha = require('mocha'),
 coMocha(mocha);
 chai.use(chaiThings);
 require('./../index');
+
+
+const pool = require('./../_shared/psql');
+pool.query('Delete From user_info');
